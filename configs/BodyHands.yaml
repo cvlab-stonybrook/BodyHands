@@ -1,0 +1,39 @@
+_BASE_: "mask_rcnn_R_101_FPN_3x.yaml"
+MODEL:
+    META_ARCHITECTURE: "ModifiedPostProcessingRCNN" 
+    WEIGHTS: "detectron2://COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x/138205316/model_final_a3ec72.pkl"
+    ROI_HEADS:
+        NAME: "HandBodyROIHeads"
+        NUM_CLASSES: 2 
+        NMS_THRESH_TEST: 0.30
+        SCORE_THRESH_TEST: 0.05
+    BACKBONE:
+        FREEZE_AT: 2
+        NAME: "build_resnet_fpn_backbone"
+    ROI_POSITIONAL_DENSITY_HEAD:
+        NAME: "PositionalDensityHead"
+        CONV_DIMS: []
+        FC_DIM: [1024, 4]
+        POOLER_RESOLUTION: 7
+        POOLER_SAMPLING_RATIO: 0
+        POOLER_TYPE: "ROIAlignV2"
+        LOSS_WEIGHT: 0.1
+    ROI_OVERLAP_ESTIMATION_HEAD:
+        NAME: "OverlapEstimationHead"
+        CONV_DIMS: [[512, 3, 1], [256, 1, 0]] 
+        FC_DIM: [1024, 512, 1] 
+        POOLER_RESOLUTION: 7
+        POOLER_SAMPLING_RATIO: 0
+        POOLER_TYPE: "ROIAlignV2"
+        LOSS_WEIGHT: 0.1
+DATASETS:
+    TRAIN: ("BodyHands_train",)
+    TEST: ("BodyHands_test",)
+TEST:
+    EVAL_PERIOD: 20000
+SOLVER:
+    CHECKPOINT_PERIOD: 20000
+    IMS_PER_BATCH: 1
+    BASE_LR: 0.0001
+    MAX_ITER: 400000
+OUTPUT_DIR: "./Output/"
